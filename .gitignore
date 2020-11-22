@@ -9,3 +9,5 @@
 /UnlockMusic/Debug
 /UnlockMusic/UnlockMusic.vcxproj.filters
 /UnlockMusic/UnlockMusic.vcxproj.user
+/.vs
+/out/build/x64-Debug (默认值)
