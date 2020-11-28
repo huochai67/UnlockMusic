@@ -9,6 +9,7 @@
 
 #include "decrypt_qmc.hpp"
 #include "decrypt_tm.hpp"
+#include "decrypt_ncm.hpp"
 
 namespace unlockmusic {
 	namespace decrypt {
@@ -57,7 +58,7 @@ namespace unlockmusic {
                 return decrypt::qqmusic::getHandler(ext.data());
                 break;
             case hash("ncm"):// Netease Mp3/Flac
-                //rt_data = await NcmDecrypt.Decrypt(file.raw, raw_filename, raw_ext);
+                return {decrypt::ncm::Decrypt, nullptr};
                 break;
             case hash("kwm"):// Kuwo Mp3/Flac
                 //rt_data = await KwmDecrypt.Decrypt(file.raw, raw_filename, raw_ext);

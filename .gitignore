@@ -11,3 +11,5 @@
 /UnlockMusic/UnlockMusic.vcxproj.user
 /.vs
 /out/build/x64-Debug (默认值)
+/out/build/x64-Debug
+/out/build/x64-Release

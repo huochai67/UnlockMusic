@@ -4,7 +4,8 @@
 namespace unlockmusic {
 	namespace decrypt {
 		namespace handler {
-			typedef void(*handler)(char*, const size_t&);
+			typedef std::pair<size_t, const char*> retType;
+			typedef retType(*handler)(char*, const size_t&);
 			struct Handler
 			{
 				handler handler;

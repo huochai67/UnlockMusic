@@ -10,13 +10,24 @@
 using std::cout;
 using std::endl;
 
+int iTask = 10;
+int iFinished = 1;
 
-void print() {
-
+void printprocessbar() {
+	fflush(stdout);
+	int i;
+	putchar('[');
+	for (i = 1; i <= 50; ++i)
+		putchar(i * iTask <= iFinished * 50 ? '>' : ' ');
+	putchar(']');
+	printf("%3d%%", int(iTask / iFinished));
+	for (i = 0; i != 50 + 6; ++i)
+	putchar('\b');
 }
 
 void AutoDecrypt(const std::filesystem::path& file_path)
 {
+	printprocessbar();
 	if (file_path.has_extension())
 	{
 		auto str_ext = file_path.extension().string();
@@ -34,15 +45,17 @@ void AutoDecrypt(const std::filesystem::path& file_path)
 				file.read(data, file_size);
 				file.close();
 
-				Handler.handler(data, file_size);
+				auto ret = Handler.handler(data, file_size);
 
 				std::string file_noext = file_path.parent_path().string() + "\\" + file_path.stem().string();
-				std::fstream file2(file_noext + "." + Handler.ext, std::ios::out | std::ios::binary | std::ios::trunc);
+				std::string outfilename = file_noext + "." + (Handler.ext ? Handler.ext : ret.second);
+				std::fstream file2(outfilename, std::ios::out | std::ios::binary | std::ios::trunc);
 				if (file2.is_open())
 				{
-					file2.write(data, file_size);
+					file2.write(data, ret.first);
 					file2.close();
 				}
+				free(data);
 			}
 		}
 	}
@@ -59,17 +72,21 @@ void decrypt(const std::filesystem::path& file_path) {
 			}
 			else
 			{
+				iTask++;
 				AutoDecrypt(file_path);
+				iFinished++;
 			}
 		}
 	}
 	else {
+		iTask++;
 		AutoDecrypt(file_path);
+		iFinished++;
 	}
 }
 
 int main(int argc, char* argv[]) {
-	decrypt("D:\\test\\qmcflac.qmcflac");
+	decrypt("D:\\test\\ncm.ncm");
 	//for (int i = 1; i < argc; ++i)
 	//	decrypt(argv[i]);
 	return 0;
