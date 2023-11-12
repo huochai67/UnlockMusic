@@ -1,15 +1,2 @@
-﻿################################################################################
-# 此 .gitignore 文件已由 Microsoft(R) Visual Studio 自动创建。
-################################################################################
-
-/.vs/UnlockMusic/v16
-/Debug
-/packages/vcpkg.E.Project.vcpkg.1.0.0
-/source
-/UnlockMusic/Debug
-/UnlockMusic/UnlockMusic.vcxproj.filters
-/UnlockMusic/UnlockMusic.vcxproj.user
-/.vs
-/out/build/x64-Debug (默认值)
-/out/build/x64-Debug
-/out/build/x64-Release
+﻿.vs
+out

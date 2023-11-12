@@ -4,7 +4,7 @@
 #include <openssl/bio.h>
 #include <openssl/evp.h>
 
-#include <ncmdump/base64.h>
+#include "base64.h"
 
 #include "decrypt_handler.hpp"
 #include "detectAudioExt.hpp"
@@ -112,13 +112,13 @@ namespace unlockmusic {
 							modifyData[i] ^= 0x63;
 
 						std::string modifyOutData;
-						if (!Base64::Decode(std::string_view{ modifyData + 22, (size_t)*iRawMetaSize - 22 }, modifyOutData)) {
+						if (auto ret = macaron::Base64::Decode(std::string{ modifyData + 22, (size_t)*iRawMetaSize - 22 }, modifyOutData); ret == "") {
 							auto modifyDecryptData = (char*)::malloc(256);
 							auto iMetaSize = aes128_ecb_decrypt((uint8_t*)MODIFY_KEY, (uint8_t*)modifyOutData.c_str(), modifyOutData.size(), (uint8_t*)modifyDecryptData);
 							std::string_view svJson{ &modifyDecryptData[6], (size_t)iMetaSize - 6 };
 						}
 						else {
-							throw std::invalid_argument("broken metadata");
+							throw std::invalid_argument(ret);
 						}
 					}
 

@@ -1,6 +1,0 @@
-[submodule "extern/ncmdump"]
-	path = extern/ncmdump
-	url = https://github.com/anonymous5l/ncmdump.git
-[submodule "extern/unlock-music"]
-	path = extern/unlock-music
-	url = https://github.com/ix64/unlock-music.git
