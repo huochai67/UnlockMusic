@@ -2,32 +2,14 @@
 #include <string_view>
 #include <fstream>
 #include <filesystem>
+#include <format>
 
 #include <cstdio>
 
 #include "decrypt.hpp"
 
-using std::cout;
-using std::endl;
-
-int iTask = 10;
-int iFinished = 1;
-
-void printprocessbar() {
-	fflush(stdout);
-	int i;
-	putchar('[');
-	for (i = 1; i <= 50; ++i)
-		putchar(i * iTask <= iFinished * 50 ? '>' : ' ');
-	putchar(']');
-	printf("%3d%%", int(iTask / iFinished));
-	for (i = 0; i != 50 + 6; ++i)
-	putchar('\b');
-}
-
 void AutoDecrypt(const std::filesystem::path& file_path)
 {
-	printprocessbar();
 	if (file_path.has_extension())
 	{
 		auto str_ext = file_path.extension().string();
@@ -61,33 +43,40 @@ void AutoDecrypt(const std::filesystem::path& file_path)
 	}
 }
 
+int iTask = 0;
+int iFinished = 0;
+#define PBWIDTH 60
+void printprocessbar(const char* name) {
+
+	auto percent = (float)iFinished / (float)iTask;
+	int i = PBWIDTH * percent;
+	std::cout << std::format("\r{} {:.1f}% [{:#>{}}]", name, percent * 100, std::format("{: >{}}", " ", PBWIDTH - i), PBWIDTH);
+	fflush(stdout);
+}
+
 void decrypt(const std::filesystem::path& file_path) {
 	if (std::filesystem::is_directory(file_path)) {
 		std::filesystem::directory_iterator list(file_path);
 		for (auto x : list)
-		{
 			if (x.is_directory())
 			{
 				decrypt(x.path());
+				return;
 			}
-			else
-			{
-				iTask++;
-				AutoDecrypt(file_path);
-				iFinished++;
-			}
-		}
 	}
-	else {
-		iTask++;
-		AutoDecrypt(file_path);
-		iFinished++;
-	}
+	iTask++;
+	printprocessbar(file_path.string().c_str());
+	AutoDecrypt(file_path);
+	iFinished++;
 }
 
 int main(int argc, char* argv[]) {
-	decrypt("D:\\test\\ncm.ncm");
-	//for (int i = 1; i < argc; ++i)
-	//	decrypt(argv[i]);
+#ifdef _DEBUG
+	decrypt("sample/sample.ncm");
+#else
+	for (int i = 1; i < argc; ++i)
+		decrypt(argv[i]);
+#endif // _DEBUG
+	printprocessbar("finished");
 	return 0;
 }
