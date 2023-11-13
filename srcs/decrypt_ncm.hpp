@@ -99,20 +99,20 @@ namespace unlockmusic {
 					buildKeyBox((unsigned char*)keybox, (unsigned char*)keydata + 17, iKeyLen - 17);
 
 					//获取Meta数据大小 4Byte
-					auto iRawMetaSize = (unsigned int*)&data[iByteRead];
+					auto iRawMetaSize = *(unsigned int*)(data+iByteRead);
 					iByteRead += 4;
 					char* modifyData = nullptr;
 					if (iRawMetaSize > 0) {
-						modifyData = (char*)::malloc(sizeof(char) * *iRawMetaSize);
-						::memcpy(modifyData, &data[iByteRead], *iRawMetaSize);
-						iByteRead += *iRawMetaSize;
+						modifyData = (char*)::malloc(sizeof(char) * iRawMetaSize);
+						::memcpy(modifyData, &data[iByteRead], iRawMetaSize);
+						iByteRead += iRawMetaSize;
 
 						//解密Meta数据
-						for (auto i = 0; i < *iRawMetaSize; i++)
+						for (auto i = 0; i < iRawMetaSize; i++)
 							modifyData[i] ^= 0x63;
 
 						std::string modifyOutData;
-						if (auto ret = macaron::Base64::Decode(std::string{ modifyData + 22, (size_t)*iRawMetaSize - 22 }, modifyOutData); ret == "") {
+						if (auto ret = macaron::Base64::Decode(std::string{ modifyData + 22, (size_t)iRawMetaSize - 22 }, modifyOutData); ret == "") {
 							auto modifyDecryptData = (char*)::malloc(256);
 							auto iMetaSize = aes128_ecb_decrypt((uint8_t*)MODIFY_KEY, (uint8_t*)modifyOutData.c_str(), modifyOutData.size(), (uint8_t*)modifyDecryptData);
 							std::string_view svJson{ &modifyDecryptData[6], (size_t)iMetaSize - 6 };
@@ -129,7 +129,7 @@ namespace unlockmusic {
 					auto iRawImageSize = (unsigned int*)&data[iByteRead];
 					iByteRead += 4;
 					char* imageData = nullptr;
-					if (*iRawMetaSize > 0) {
+					if (iRawMetaSize > 0) {
 						imageData = (char*)::malloc(sizeof(char) * *iRawImageSize);
 						::memcpy(imageData, &data[iByteRead], *iRawImageSize);
 						iByteRead += *iRawImageSize;
